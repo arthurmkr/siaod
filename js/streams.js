@@ -1,17 +1,55 @@
-const range = (low, high, step) => {
-    let cur = low;
-    return () => {
-        if (cur > high) return null;
+function emptyStream() {
+    return newStream(null, null)
+}
 
-        const res = cur;
-        cur += step;
-        return res;
+function newStream(cur, next) {
+    return {
+        cur: () => cur,
+        next: next,
+        isEmpty: () => cur == null
     }
 }
 
-let arrStr1 = range(1, 10, 2);
-
-let v;
-while (v = arrStr1()) {
-    console.log(v)
+function intRange(low, high) {
+    return low > high ? emptyStream() : newStream(low, () => intRange(low + 1, high));
 }
+
+function filter(predicate, stream) {
+    if (stream.isEmpty()) {
+        return emptyStream();
+    } else if (predicate(stream.cur())) {
+        return newStream(stream.cur(), () => filter(predicate, stream.next()))
+    } else {
+        return filter(predicate, stream.next())
+    }
+}
+
+function iterate(stream, handler, limit) {
+    let index = 0;
+    while (!stream.isEmpty() && (limit !== undefined && index < limit)) {
+        handler(stream.cur());
+        stream = stream.next();
+        index++;
+    }
+}
+
+// iterate(
+//     filter(x => x % 2 === 0,
+//         intRange(10, 16)),
+//     console.log);
+
+function infinityStream(start, next) {
+    return newStream(start, () => infinityStream(next(start), next))
+}
+
+function naturalInt(start) {
+    return infinityStream(start, x => x + 1)
+}
+
+iterate(
+    filter(x => x % 2 === 0,
+        infinityStream(2, x => x * 2)),
+    console.log, 6);
+
+
+
