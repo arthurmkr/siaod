@@ -1,3 +1,5 @@
+import * as math from './math.js';
+
 function emptyStream() {
     return newStream(null, null)
 }
@@ -46,10 +48,20 @@ function naturalInt(start) {
     return infinityStream(start, x => x + 1)
 }
 
-iterate(
-    filter(x => x % 2 === 0,
-        infinityStream(2, x => x * 2)),
-    console.log, 6);
+// iterate(
+//     filter(x => x % 2 === 0,
+//         infinityStream(2, x => x * 2)),
+//     console.log, 6);
+//
 
+function randomNumbers() {
+    return newStream(Math.random(), () => randomNumbers());
+}
+
+// iterate(
+//     randomNumbers(),
+//     console.log, 6);
+
+console.log(math.gcd(12, 16))
 
 

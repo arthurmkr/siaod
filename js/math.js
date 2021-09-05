@@ -4,7 +4,7 @@
  * @param b
  * @returns {*}
  */
-function gcd(a, b) {
+export function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
 }
 
@@ -21,3 +21,8 @@ function fib(n) {
 
     return innerFib(0, 1, 1);
 }
+
+// module.exports = {fib}
+
+
+// module.exports = { gcd};
