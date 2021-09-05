@@ -4,26 +4,95 @@ import java.util.*;
 
 public class SortTest {
     private static final long MAX_TIME_LIMIT = 5000;
+    private static String firstColumnStr;
+    private static String otherColumnStr;
+
+    static {
+        char[] firstColumn = new char[25];
+        Arrays.fill(firstColumn, ' ');
+        firstColumnStr = new String(firstColumn);
+
+        char[] otherColumn = new char[10];
+        Arrays.fill(otherColumn, ' ');
+        otherColumnStr = new String(otherColumn);
+    }
+
     Random random = new Random();
 
     public static void main(String[] args) {
 
         SortTest test = new SortTest();
         int initSize = 10000;
-        int iterationCount = 8;
+        int iterationCount = 6;
         List<Sort> sorts = Arrays.asList(
-                new Sort() {
-                    @Override
-                    public void sort(int[] array) {
-                        Arrays.sort(array);
-                    }
-                },
+                new JdkSort(),
                 new HeapSort(),
-                new BubbleSort(),
-                new BubbleImprovedSort()
+                new BubbleImprovedSort(),
+                new InsertSort()
         );
 
-        test.run(sorts, initSize, iterationCount);
+        Map<Sort, List<SortResult>> results = test.run(sorts, initSize, iterationCount);
+
+//        printExtendedStatistics(results);
+        printTable(results);
+    }
+
+    static void printTable(Map<Sort, List<SortResult>> results) {
+        List<List<Object>> table = new ArrayList<>();
+
+        List<Integer> sizes = new ArrayList<>();
+        for (Map.Entry<Sort, List<SortResult>> entry : results.entrySet()) {
+            List<Object> columns = new ArrayList<>();
+            columns.add(entry.getKey().getClass().getSimpleName());
+
+            int sizeIndex = 0;
+            for (SortResult result : entry.getValue()) {
+                columns.add(result.taken());
+
+                if (sizeIndex >= sizes.size()) {
+                    sizes.add(result.size);
+                }
+                sizeIndex++;
+            }
+
+            table.add(columns);
+        }
+
+        StringBuilder builder = new StringBuilder(normalizeFirstColumn("Sort \\ Size", firstColumnStr));
+        for (Integer size : sizes) {
+            builder.append(normalizeFirstColumn(String.valueOf(size), otherColumnStr));
+        }
+
+        System.out.println(builder + "\n");
+        for (List<Object> row : table) {
+            StringBuilder rowBuilder = new StringBuilder(normalizeFirstColumn(row.get(0).toString(), firstColumnStr));
+
+            for (int i = 1; i < row.size(); i++) {
+                rowBuilder.append(normalizeFirstColumn(String.valueOf(row.get(i)), otherColumnStr));
+            }
+
+            System.out.println(rowBuilder);
+        }
+    }
+
+    private static StringBuilder normalizeFirstColumn(String columnValue, String columnTemplate) {
+        StringBuilder builder = new StringBuilder(columnTemplate);
+
+        builder.replace(0, columnValue.length(), columnValue);
+        return builder;
+    }
+
+    static void printExtendedStatistics(Map<Sort, List<SortResult>> results) {
+        for (Map.Entry<Sort, List<SortResult>> entry : results.entrySet()) {
+            System.out.println("Sort by " + entry.getKey().getClass().getSimpleName());
+
+            SortResult prev = null;
+            for (SortResult res : entry.getValue()) {
+                System.out.println("size: " + res.size + ",\t taken: " + res.taken() + ", \ttime scale: " + res.scale(prev));
+
+                prev = res;
+            }
+        }
     }
 
     private static void checkOrder(int[] array) {
@@ -34,7 +103,7 @@ public class SortTest {
         }
     }
 
-    private void run(List<Sort> algos, int initSize, int iterationCount) {
+    private Map<Sort, List<SortResult>> run(List<Sort> algos, int initSize, int iterationCount) {
         for (Sort algo : algos) {
             warmingUp(algo);
         }
@@ -71,17 +140,7 @@ public class SortTest {
             size *= 2;
         }
 
-
-        for (Map.Entry<Sort, List<SortResult>> entry : results.entrySet()) {
-            System.out.println("Sort by " + entry.getKey().getClass().getSimpleName());
-
-            SortResult prev = null;
-            for (SortResult res : entry.getValue()) {
-                System.out.println("size: " + res.size + ", taken: " + res.taken() + ", time scale: " + res.scale(prev));
-
-                prev = res;
-            }
-        }
+        return results;
     }
 
     int[] generateArray(int size) {
@@ -101,7 +160,7 @@ public class SortTest {
         checkOrder(array);
     }
 
-    class SortResult {
+    static class SortResult {
         int size;
         long start = System.currentTimeMillis();
         long end;
