@@ -18,7 +18,7 @@ function apply(procedure, args) {
 const emptyList = () => {
     return {
         car: () => null,
-        cdr: () => null
+        cdr: () => emptyList()
     }
 }
 
@@ -67,7 +67,47 @@ function evalDefinition(exp, env) {
     return true;
 }
 
+function isSelfEvaluting(exp) {
+    if (isNumber(exp)) {
+        return true;
+    } else if (isString(exp)) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
+function isVariable(exp) {
+    return isSymbol(exp);
+}
+
+function isQuoted(exp) {
+    return isTaggedList(exp, "quote")
+}
+
+function isAssignment(exp) {
+    return isTaggedList(exp, "set!");
+}
+
+function assignmentVariable(exp) {
+    return exp.cdr().car();
+}
+
+function assignmentValue(exp) {
+    return exp.cdr().cdr().car();
+}
+
+
+function isDeifinition(exp) {
+    return isTaggedList(exp, "define")
+}
+
+function isTaggedList(exp, tag) {
+    if (exp.car !== undefined) {
+        return exp.car() === tag;
+    }
+    return false;
+}
 
 function eval(exp, env) {
     if (isSelfEvaluting(exp)) {
