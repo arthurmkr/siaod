@@ -27,6 +27,7 @@ public class SortTest {
         List<Sort> sorts = Arrays.asList(
                 new JdkSort(),
                 new HeapSort(),
+                new SelectSort(),
                 new BubbleImprovedSort(),
                 new InsertSort()
         );
@@ -154,7 +155,7 @@ public class SortTest {
     }
 
     void warmingUp(Sort algo) {
-        int[] array = generateArray(10000);
+        int[] array = generateArray(100000);
         algo.sort(array);
 
         checkOrder(array);
