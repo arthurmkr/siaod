@@ -23,13 +23,16 @@ public class SortTest {
 
         SortTest test = new SortTest();
         int initSize = 10000;
-        int iterationCount = 6;
+        int iterationCount = 9;
         List<Sort> sorts = Arrays.asList(
                 new JdkSort(),
                 new HeapSort(),
-                new SelectSort(),
-                new BubbleImprovedSort(),
-                new InsertSort()
+                new MergeSort(),
+
+//                new SelectSort(),
+//                new BubbleImprovedSort(),
+                new InsertSort(),
+                new InsertImprovedSort()
         );
 
         Map<Sort, List<SortResult>> results = test.run(sorts, initSize, iterationCount);
@@ -158,7 +161,7 @@ public class SortTest {
         int[] array = generateArray(100000);
         algo.sort(array);
 
-        checkOrder(array);
+//        checkOrder(array);
     }
 
     static class SortResult {

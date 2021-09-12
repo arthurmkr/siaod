@@ -15,12 +15,15 @@ public abstract class AbstractSort implements Sort {
             array[i] = (int) (Math.random() * Math.max(size / 100, 20));
         }
 
-//        array = new int[]{1, 1, 2, 4,3,2,1,2,3};
-//        System.out.println("Unsorted array: " + Arrays.toString(array));
+        test(array);
+    }
+
+    public void test(int[] array) {
+        System.out.println("Unsorted array: " + Arrays.toString(array));
 
         sort(array);
 
-//        System.out.println("Sorted array: " + Arrays.toString(array));
+        System.out.println("Sorted array: " + Arrays.toString(array));
     }
 
 }
