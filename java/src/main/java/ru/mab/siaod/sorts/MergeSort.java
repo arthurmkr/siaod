@@ -11,7 +11,7 @@ public class MergeSort extends AbstractSort {
         subSort(array, 0, array.length - 1);
     }
 
-    private void subSort(int[] array, int start, int end) {
+    protected void subSort(int[] array, int start, int end) {
         if (start >= end) {
             return;
         }
