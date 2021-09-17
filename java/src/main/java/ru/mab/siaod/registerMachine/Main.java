@@ -2,7 +2,9 @@ package ru.mab.siaod.registerMachine;
 
 import lombok.Value;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 interface Input {
 
@@ -46,6 +48,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        new Machine(Arrays.asList("a", "b", "t"), Map.of());
+
         new Controller(
                 label("test-b"),
                 test(op("="), reg("b"), _const(0)),
