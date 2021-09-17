@@ -2,6 +2,8 @@ package ru.mab.siaod.sorts;
 
 import java.util.*;
 
+import static ru.mab.siaod.ArrayUtil.generateArray;
+
 public class SortTest {
     private static final long MAX_TIME_LIMIT = 5000;
     private static String firstColumnStr;
@@ -16,8 +18,6 @@ public class SortTest {
         Arrays.fill(otherColumn, ' ');
         otherColumnStr = new String(otherColumn);
     }
-
-    Random random = new Random();
 
     public static void main(String[] args) {
 
@@ -146,16 +146,6 @@ public class SortTest {
         }
 
         return results;
-    }
-
-    int[] generateArray(int size) {
-        int[] array = new int[size];
-
-        for (int i = 0; i < size; i++) {
-            array[i] = random.nextInt(2000);
-        }
-
-        return array;
     }
 
     void warmingUp(Sort algo) {

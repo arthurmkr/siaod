@@ -24,3 +24,6 @@ hs_err_pid*
 /js/js.iml
 /java/java.iml
 /.idea/
+/java/target/
+
+*.iml
