@@ -5,6 +5,18 @@ import java.util.Random;
 public class ArrayUtil {
     static Random random = new Random();
 
+    public static void swap(int[] array, int firstIndex, int secondIndex) {
+        int temp = array[firstIndex];
+        array[firstIndex] = array[secondIndex];
+        array[secondIndex] = temp;
+    }
+
+    public static void swap(long[] array, int firstIndex, int secondIndex) {
+        long temp = array[firstIndex];
+        array[firstIndex] = array[secondIndex];
+        array[secondIndex] = temp;
+    }
+
     public static int[] generateArray(int size) {
         return generateArray(size, 0, 2000);
     }
@@ -14,6 +26,16 @@ public class ArrayUtil {
 
         for (int i = 0; i < size; i++) {
             array[i] = random.nextInt(max - min) + min;
+        }
+
+        return array;
+    }
+
+    public static long[] generateArray(int size, long min, long max) {
+        long[] array = new long[size];
+
+        for (int i = 0; i < size; i++) {
+            array[i] = Math.abs(random.nextLong()) % (max - min) + min;
         }
 
         return array;
