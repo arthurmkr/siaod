@@ -7,6 +7,8 @@ import java.util.List;
 
 interface Constraint {
     void processNewValue();
+
+    void reset();
 }
 
 interface Connector {
@@ -17,6 +19,8 @@ interface Connector {
     void setValue(BigDecimal value, Constraint initiator);
 
     void addConstraint(Constraint constraint);
+
+    void reset(Constraint initiator);
 }
 
 abstract class AbstractNode implements Constraint {
@@ -41,6 +45,21 @@ abstract class AbstractNode implements Constraint {
             a2.setValue(op2(a1.getValue(), result.getValue()), this);
         } else if (a2.hasValue() && result.hasValue()) {
             a1.setValue(op3(a2.getValue(), result.getValue()), this);
+        }
+    }
+
+    @Override
+    public void reset() {
+        if (a1.hasValue()) {
+            a1.reset(this);
+        }
+
+        if (a2.hasValue()) {
+            a2.reset(this);
+        }
+
+        if (result.hasValue()) {
+            result.reset(this);
         }
     }
 
@@ -129,6 +148,17 @@ class VarConnector implements Connector {
     }
 
     @Override
+    public void reset(Constraint initiator) {
+        this.value = null;
+
+        for (Constraint constraint : constraints) {
+            if (constraint != initiator) {
+                constraint.reset();
+            }
+        }
+    }
+
+    @Override
     public String toString() {
         return "VarConnector{" +
                 "name='" + name + '\'' +
@@ -146,6 +176,10 @@ class ConstConnector extends VarConnector {
     @Override
     public void setValue(BigDecimal value, Constraint initiator) {
 
+    }
+
+    @Override
+    public void reset(Constraint initiator) {
     }
 }
 
@@ -179,7 +213,7 @@ class CelsiusFahrenheitConverter {
      * @return значение в градусах Цельсия
      */
     public BigDecimal fToC(double value) {
-        // TODO сбросить цепь
+        f.reset(null);
         f.setValue(new BigDecimal(value), null);
         return c.getValue();
     }
@@ -191,7 +225,7 @@ class CelsiusFahrenheitConverter {
      * @return значение в градусах Фаренгейта
      */
     public BigDecimal cToF(double value) {
-        // TODO сбросить цепь
+        c.reset(null);
         c.setValue(new BigDecimal(value), null);
         return f.getValue();
     }
@@ -204,7 +238,11 @@ public class RestrictionPropagation {
     public static void main(String[] args) {
         CelsiusFahrenheitConverter converter = new CelsiusFahrenheitConverter();
 
-        System.out.println(converter.fToC(212));
-        System.out.println(converter.cToF(25));
+        int origFar = 212;
+        BigDecimal cel = converter.fToC(origFar);
+        System.out.println(cel);
+        BigDecimal far = converter.cToF(cel.intValue());
+        System.out.println(far);
+        System.out.println(origFar == far.intValue());
     }
 }
