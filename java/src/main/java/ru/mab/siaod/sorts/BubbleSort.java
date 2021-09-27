@@ -2,6 +2,8 @@ package ru.mab.siaod.sorts;
 
 import java.util.Arrays;
 
+import static ru.mab.siaod.ArrayUtil.swap;
+
 public class BubbleSort extends AbstractSort {
     public static void main(String[] args) {
         int[] ints = {5, 4, 1, 2, 3};

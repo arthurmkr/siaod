@@ -25,6 +25,7 @@ public class ArrayUtil {
         int[] array = new int[size];
 
         for (int i = 0; i < size; i++) {
+//            array[i] = min +  i;
             array[i] = random.nextInt(max - min) + min;
         }
 

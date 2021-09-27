@@ -23,12 +23,14 @@ public class SortTest {
 
         SortTest test = new SortTest();
         int initSize = 10000;
-        int iterationCount = 11;
+        int iterationCount = 10;
         List<Sort> sorts = Arrays.asList(
                 new JdkSort(),
-                new HeapSort(),
-                new MergeSort(),
-                new MergeImprovedSort()
+//                new HeapSort(),
+//                new MergeSort(),
+//                new MergeImprovedSort(),
+//                new QuickSort(),
+                new RandomizedQuickSort()
 
 //                new SelectSort(),
 //                new BubbleImprovedSort(),
@@ -118,7 +120,7 @@ public class SortTest {
         int size = initSize;
         Map<Sort, Boolean> skips = new HashMap<>();
         for (int iterationIndex = 0; iterationIndex < iterationCount; iterationIndex++) {
-            int[] array = generateArray(size);
+            int[] array = generateArray(size, Integer.MIN_VALUE / 4, Integer.MAX_VALUE / 4);
 
             System.out.println("Sort array: " + size);
 

@@ -1,5 +1,7 @@
 package ru.mab.siaod.sorts;
 
+import static ru.mab.siaod.ArrayUtil.swap;
+
 public class HeapSort extends AbstractSort {
     @Override
     public void sort(int[] array) {

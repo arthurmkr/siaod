@@ -1,5 +1,7 @@
 package ru.mab.siaod.sorts;
 
+import static ru.mab.siaod.ArrayUtil.swap;
+
 public class SelectSort extends AbstractSort {
     public static void main(String[] args) {
         new SelectSort().test(10);
