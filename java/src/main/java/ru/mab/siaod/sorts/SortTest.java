@@ -29,8 +29,11 @@ public class SortTest {
 //                new HeapSort(),
 //                new MergeSort(),
 //                new MergeImprovedSort(),
-//                new QuickSort(),
-                new RandomizedQuickSort()
+                new QuickSort(),
+//                new RandomizedQuickSort(),
+//                new HoarePartitionQuickSort(),
+//                new RandomHoarePartitionQuickSort(),
+                new QuickSortWithInsert()
 
 //                new SelectSort(),
 //                new BubbleImprovedSort(),

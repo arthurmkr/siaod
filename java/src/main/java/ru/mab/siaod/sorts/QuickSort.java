@@ -5,7 +5,6 @@ import static ru.mab.siaod.ArrayUtil.swap;
 public class QuickSort extends AbstractSort {
     public static void main(String[] args) {
         new QuickSort().test(10);
-//        new QuickSort().test(new int[]{2, 11, 18, 0, 11, 3, 15, 4, 13, 4});
     }
 
     @Override
@@ -13,7 +12,7 @@ public class QuickSort extends AbstractSort {
         quicksort(array, 0, array.length - 1);
     }
 
-    private void quicksort(int[] array, int l, int r) {
+    protected void quicksort(int[] array, int l, int r) {
         if (r > l) {
             int middle = partition(array, l, r);
             quicksort(array, l, middle - 1);
