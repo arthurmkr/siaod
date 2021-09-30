@@ -5,6 +5,10 @@ import java.util.*;
 import static ru.mab.siaod.ArrayUtil.generateArray;
 
 public class SortTest {
+    public static final int MIN_NUMBER = -100000;
+    public static final int MAX_NUMBER = 100000;
+    //    public static final int MIN_NUMBER = Integer.MIN_VALUE / 4;
+    //    public static final int MAX_NUMBER = Integer.MAX_VALUE / 4;
     private static final long MAX_TIME_LIMIT = 5000;
     private static String firstColumnStr;
     private static String otherColumnStr;
@@ -23,17 +27,19 @@ public class SortTest {
 
         SortTest test = new SortTest();
         int initSize = 10000;
-        int iterationCount = 10;
+        int iterationCount = 14;
         List<Sort> sorts = Arrays.asList(
-                new JdkSort(),
+//                new JdkSort(),
 //                new HeapSort(),
 //                new MergeSort(),
 //                new MergeImprovedSort(),
-                new QuickSort(),
+//                new QuickSort(),
 //                new RandomizedQuickSort(),
 //                new HoarePartitionQuickSort(),
 //                new RandomHoarePartitionQuickSort(),
-                new QuickSortWithInsert()
+//                new QuickSortWithInsert(),
+                new CountingSort(),
+                new ImprovedCountingSort()
 
 //                new SelectSort(),
 //                new BubbleImprovedSort(),
@@ -123,7 +129,7 @@ public class SortTest {
         int size = initSize;
         Map<Sort, Boolean> skips = new HashMap<>();
         for (int iterationIndex = 0; iterationIndex < iterationCount; iterationIndex++) {
-            int[] array = generateArray(size, Integer.MIN_VALUE / 4, Integer.MAX_VALUE / 4);
+            int[] array = generateArray(size, MIN_NUMBER, MAX_NUMBER);
 
             System.out.println("Sort array: " + size);
 
