@@ -5,16 +5,16 @@ import java.util.*;
 import static ru.mab.siaod.ArrayUtil.generateArray;
 
 public class SortTest {
-    public static final int MIN_NUMBER = -100000;
-    public static final int MAX_NUMBER = 100000;
-    //    public static final int MIN_NUMBER = Integer.MIN_VALUE / 4;
-    //    public static final int MAX_NUMBER = Integer.MAX_VALUE / 4;
+//    public static final int MIN_NUMBER = 0;
+//    public static final int MAX_NUMBER = 400000;
+        public static final int MIN_NUMBER = Integer.MIN_VALUE / 4;
+        public static final int MAX_NUMBER = Integer.MAX_VALUE / 4;
     private static final long MAX_TIME_LIMIT = 5000;
     private static String firstColumnStr;
     private static String otherColumnStr;
 
     static {
-        char[] firstColumn = new char[25];
+        char[] firstColumn = new char[35];
         Arrays.fill(firstColumn, ' ');
         firstColumnStr = new String(firstColumn);
 
@@ -27,24 +27,31 @@ public class SortTest {
 
         SortTest test = new SortTest();
         int initSize = 10000;
-        int iterationCount = 14;
+        int iterationCount = 7
+
+                ;
         List<Sort> sorts = Arrays.asList(
-//                new JdkSort(),
+                new JdkSort(),
 //                new HeapSort(),
+                new ColumnSort(),
 //                new MergeSort(),
 //                new MergeImprovedSort(),
 //                new QuickSort(),
 //                new RandomizedQuickSort(),
 //                new HoarePartitionQuickSort(),
 //                new RandomHoarePartitionQuickSort(),
-//                new QuickSortWithInsert(),
-                new CountingSort(),
-                new ImprovedCountingSort()
+//                new QuickSortWithInsert()
+                // TODO работает только на положительных числах и небольшом диапазоне
+//                new CountingSort(),
+                // TODO работает только на положительных числах
+//                new ImprovedCountingSort(),
+                // TODO работает только на положительных числах
+//                new RadixSort()
 
 //                new SelectSort(),
 //                new BubbleImprovedSort(),
 //                new InsertSort(),
-//                new InsertImprovedSort()
+                new InsertImprovedSort()
         );
 
         Map<Sort, List<SortResult>> results = test.run(sorts, initSize, iterationCount);

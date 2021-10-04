@@ -19,6 +19,11 @@ public abstract class AbstractSort implements Sort {
         sort(array);
 
         System.out.println("Sorted array: " + Arrays.toString(array));
+        for (int i = 1; i < array.length; i++) {
+            if (array[i - 1] > array[i]) {
+                throw new RuntimeException("error sorting");
+            }
+        }
     }
 
 }
