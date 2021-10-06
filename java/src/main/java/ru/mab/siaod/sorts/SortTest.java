@@ -1,39 +1,19 @@
 package ru.mab.siaod.sorts;
 
-import java.util.*;
+import ru.mab.siaod.Benchmark;
+import ru.mab.siaod.TestingAlgo;
 
-import static ru.mab.siaod.ArrayUtil.generateArray;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SortTest {
-//    public static final int MIN_NUMBER = 0;
-//    public static final int MAX_NUMBER = 400000;
-        public static final int MIN_NUMBER = Integer.MIN_VALUE / 4;
-        public static final int MAX_NUMBER = Integer.MAX_VALUE / 4;
-    private static final long MAX_TIME_LIMIT = 5000;
-    private static String firstColumnStr;
-    private static String otherColumnStr;
-
-    static {
-        char[] firstColumn = new char[35];
-        Arrays.fill(firstColumn, ' ');
-        firstColumnStr = new String(firstColumn);
-
-        char[] otherColumn = new char[10];
-        Arrays.fill(otherColumn, ' ');
-        otherColumnStr = new String(otherColumn);
-    }
-
     public static void main(String[] args) {
-
-        SortTest test = new SortTest();
-        int initSize = 10000;
-        int iterationCount = 7
-
-                ;
-        List<Sort> sorts = Arrays.asList(
-                new JdkSort(),
+        List<TestingAlgo> algos = Stream.of(
+                        new JdkSort()
 //                new HeapSort(),
-                new ColumnSort(),
+//                new ColumnSort(),
 //                new MergeSort(),
 //                new MergeImprovedSort(),
 //                new QuickSort(),
@@ -41,157 +21,35 @@ public class SortTest {
 //                new HoarePartitionQuickSort(),
 //                new RandomHoarePartitionQuickSort(),
 //                new QuickSortWithInsert()
-                // TODO работает только на положительных числах и небольшом диапазоне
-//                new CountingSort(),
-                // TODO работает только на положительных числах
+                        // TODO работает только на положительных числах и небольшом диапазоне
+//                new CountingSort()
+                        // TODO работает только на положительных числах
 //                new ImprovedCountingSort(),
-                // TODO работает только на положительных числах
+                        // TODO работает только на положительных числах
 //                new RadixSort()
 
 //                new SelectSort(),
 //                new BubbleImprovedSort(),
 //                new InsertSort(),
-                new InsertImprovedSort()
-        );
+//                new InsertImprovedSort()
+                )
+                .map(SortTest::createAlgo)
+                .collect(Collectors.toList());
 
-        Map<Sort, List<SortResult>> results = test.run(sorts, initSize, iterationCount);
-
-//        printExtendedStatistics(results);
-        printTable(results);
+        new Benchmark().runTest(algos, 10000, 7);
     }
 
-    static void printTable(Map<Sort, List<SortResult>> results) {
-        List<List<Object>> table = new ArrayList<>();
-
-        List<Integer> sizes = new ArrayList<>();
-        for (Map.Entry<Sort, List<SortResult>> entry : results.entrySet()) {
-            List<Object> columns = new ArrayList<>();
-            columns.add(entry.getKey().getClass().getSimpleName());
-
-            int sizeIndex = 0;
-            for (SortResult result : entry.getValue()) {
-                columns.add(result.taken());
-
-                if (sizeIndex >= sizes.size()) {
-                    sizes.add(result.size);
-                }
-                sizeIndex++;
+    private static TestingAlgo createAlgo(Sort s) {
+        return new TestingAlgo() {
+            @Override
+            public String getName() {
+                return s.getClass().getSimpleName();
             }
 
-            table.add(columns);
-        }
-
-        StringBuilder builder = new StringBuilder(normalizeFirstColumn("Sort \\ Size", firstColumnStr));
-        for (Integer size : sizes) {
-            builder.append(normalizeFirstColumn(String.valueOf(size), otherColumnStr));
-        }
-
-        System.out.println(builder + "\n");
-        for (List<Object> row : table) {
-            StringBuilder rowBuilder = new StringBuilder(normalizeFirstColumn(row.get(0).toString(), firstColumnStr));
-
-            for (int i = 1; i < row.size(); i++) {
-                rowBuilder.append(normalizeFirstColumn(String.valueOf(row.get(i)), otherColumnStr));
+            @Override
+            public void run(int[] arr) {
+                s.sort(arr);
             }
-
-            System.out.println(rowBuilder);
-        }
-    }
-
-    private static StringBuilder normalizeFirstColumn(String columnValue, String columnTemplate) {
-        StringBuilder builder = new StringBuilder(columnTemplate);
-
-        builder.replace(0, columnValue.length(), columnValue);
-        return builder;
-    }
-
-    static void printExtendedStatistics(Map<Sort, List<SortResult>> results) {
-        for (Map.Entry<Sort, List<SortResult>> entry : results.entrySet()) {
-            System.out.println("Sort by " + entry.getKey().getClass().getSimpleName());
-
-            SortResult prev = null;
-            for (SortResult res : entry.getValue()) {
-                System.out.println("size: " + res.size + ",\t taken: " + res.taken() + ", \ttime scale: " + res.scale(prev));
-
-                prev = res;
-            }
-        }
-    }
-
-    private static void checkOrder(int[] array) {
-        for (int i = 0; i < array.length - 1; i++) {
-            if (array[i + 1] - array[i] < 0) {
-                throw new RuntimeException(Arrays.toString(array));
-            }
-        }
-    }
-
-    private Map<Sort, List<SortResult>> run(List<Sort> algos, int initSize, int iterationCount) {
-        for (Sort algo : algos) {
-            warmingUp(algo);
-        }
-
-        Map<Sort, List<SortResult>> results = new HashMap<>();
-
-        int size = initSize;
-        Map<Sort, Boolean> skips = new HashMap<>();
-        for (int iterationIndex = 0; iterationIndex < iterationCount; iterationIndex++) {
-            int[] array = generateArray(size, MIN_NUMBER, MAX_NUMBER);
-
-            System.out.println("Sort array: " + size);
-
-            for (Sort algo : algos) {
-                if (skips.containsKey(algo)) {
-                    continue;
-                }
-
-                SortResult sortResult = new SortResult(size);
-
-                algo.sort(Arrays.copyOf(array, array.length));
-
-                sortResult.finish();
-
-                results.computeIfAbsent(algo, key -> new ArrayList<>())
-                        .add(sortResult);
-
-
-                if (sortResult.taken() > MAX_TIME_LIMIT) {
-                    skips.put(algo, true);
-                }
-            }
-
-            size *= 2;
-        }
-
-        return results;
-    }
-
-    void warmingUp(Sort algo) {
-        int[] array = generateArray(100000);
-        algo.sort(array);
-
-        checkOrder(array);
-    }
-
-    static class SortResult {
-        int size;
-        long start = System.currentTimeMillis();
-        long end;
-
-        public SortResult(int size) {
-            this.size = size;
-        }
-
-        void finish() {
-            end = System.currentTimeMillis();
-        }
-
-        long taken() {
-            return end - start;
-        }
-
-        double scale(SortResult prev) {
-            return prev == null ? 0 : (double) taken() / prev.taken();
-        }
+        };
     }
 }

@@ -18,7 +18,7 @@ public class ArrayUtil {
     }
 
     public static int[] generateArray(int size) {
-        return generateArray(size, 0, 2000);
+        return generateArray(size, Integer.MIN_VALUE / 4, Integer.MAX_VALUE / 4);
     }
 
     public static int[] generateArray(int size, int min, int max) {
