@@ -1,27 +1,17 @@
 package ru.mab.siaod.tree;
 
-public class TreeMain {
-    public static Node node(int value, Node left, Node right) {
-        return new Node(value, left, right);
-    }
+import static ru.mab.siaod.RandomUtil.nextInt;
 
-    public static Node node(int value) {
-        return node(value, null, null);
-    }
+public class TreeMain {
 
     public static void main(String[] args) {
-        Node root =
-                node(5,
-                        node(3,
-                                node(2),
-                                node(4)),
-                        node(7,
-                                node(6),
-                                node(8))
-                );
+        Tree tree = new Tree();
 
+        for (int i = 0; i < 100; i++) {
+            tree.insert(nextInt(100));
+        }
 
-        System.out.println(maxDepth(root));
+        System.out.println(tree);
     }
 
     public static int maxDepth(Node node) {
