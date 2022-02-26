@@ -1,27 +1,37 @@
 package ru.mab.siaod.tree;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import static ru.mab.siaod.RandomUtil.nextInt;
 import static ru.mab.siaod.tree.RBTree.Color.BLACK;
 import static ru.mab.siaod.tree.RBTree.Color.RED;
 
 public class RBTree {
-    Node root;
-
-    private static boolean isRed(Node node) {
-        return node != null && node.color == RED;
-    }
+    Node NIL = new Node(0, BLACK);
+    Node root = NIL;
 
     public static void main(String[] args) {
         RBTree tree = new RBTree();
+
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-//            tree.insert(i);
-            tree.insert((int) (Math.random() * 1000));
+            int v = nextInt(1000);
+            list.add(v);
+            tree.insert(v);
         }
 
+
+        System.out.println(tree.asString());
         System.out.println("Min height: " + tree.getMinHeight());
         System.out.println("Max height: " + tree.getMaxHeight());
-        System.out.println(tree);
+
+        for (int v : list) {
+            tree.delete(v);
+        }
+        System.out.println(tree.asString());
+
     }
 
     public int getMinHeight() {
@@ -59,10 +69,10 @@ public class RBTree {
     }
 
     public void insert(Node z) {
-        Node y = null;
+        Node y = NIL;
         Node x = root;
 
-        while (x != null) {
+        while (x != NIL) {
             y = x;
             if (z.value < x.value) {
                 x = x.left;
@@ -73,7 +83,7 @@ public class RBTree {
 
         z.p = y;
 
-        if (y == null) {
+        if (y == NIL) {
             root = z;
         } else if (z.value < y.value) {
             y.left = z;
@@ -81,18 +91,20 @@ public class RBTree {
             y.right = z;
         }
 
+        z.left = NIL;
+        z.right = NIL;
         z.color = RED;
         insertFixup(z);
     }
 
     private void insertFixup(Node z) {
-        while (isRed(z.p)) {
+        while (z.p.color == RED) {
             Node grandparent = z.p.p;
 
             if (z.p == grandparent.left) {
                 Node uncle = grandparent.right;
 
-                if (isRed(uncle)) {
+                if (uncle.color == RED) {
                     z.p.color = BLACK;
                     uncle.color = BLACK;
                     grandparent.color = RED;
@@ -110,7 +122,7 @@ public class RBTree {
             } else {
                 Node uncle = grandparent.left;
 
-                if (isRed(uncle)) {
+                if (uncle.color == RED) {
                     z.p.color = BLACK;
                     uncle.color = BLACK;
                     grandparent.color = RED;
@@ -133,32 +145,14 @@ public class RBTree {
 
     private void leftRotate(Node x) {
         Node y = x.right;
+        x.right = y.left;
 
-        if (y.left != null) {
+        if (y.left != NIL) {
             y.left.p = x;
         }
 
-        x.right = y.left;
-        y.left = x;
-
-        changeParent(x, y);
-    }
-
-    private void rightRotate(Node x) {
-        Node y = x.left;
-
-        if (y.right != null) {
-            y.right.p = x;
-        }
-
-        x.left = y.right;
-        y.right = x;
-
-        changeParent(x, y);
-    }
-
-    private void changeParent(Node x, Node y) {
-        if (x.p == null) {
+        y.p = x.p;
+        if (x.p == NIL) {
             root = y;
         } else if (x == x.p.left) {
             x.p.left = y;
@@ -166,22 +160,165 @@ public class RBTree {
             x.p.right = y;
         }
 
+        y.left = x;
+        x.p = y;
+    }
+
+    private void rightRotate(Node x) {
+        Node y = x.left;
+        x.left = y.right;
+
+        if (y.right != NIL) {
+            y.right.p = x;
+        }
+
         y.p = x.p;
+        if (x.p == NIL) {
+            root = y;
+        } else if (x == x.p.left) {
+            x.p.left = y;
+        } else {
+            x.p.right = y;
+        }
+
+        y.right = x;
         x.p = y;
     }
 
     private void transplant(Node u, Node v) {
-        if (u.p == null) {
+        if (u.p == NIL) {
             root = v;
         } else if (u == u.p.left) {
             u.p.left = v;
         } else {
             u.p.right = v;
         }
+
+        v.p = u.p;
     }
 
-    @Override
-    public String toString() {
+    private Node findNode(int v) {
+        Node cur = root;
+
+        while (cur != NIL && cur.value != v) {
+            cur = cur.value > v ? cur.left : cur.right;
+        }
+
+        return cur;
+    }
+
+    public void delete(int v) {
+        Node z = findNode(v);
+
+        if (z == NIL) {
+            return;
+        }
+
+        Node y = z;
+        Node x;
+
+        Color yOrigColor = y.color;
+
+        if (z.left == NIL) {
+            x = z.right;
+            transplant(z, z.right);
+        } else if (z.right == NIL) {
+            x = z.left;
+            transplant(z, z.left);
+        } else {
+            y = findMinNode(z.right);
+            yOrigColor = y.color;
+            x = y.right;
+
+            if (y.p == z) {
+                x.p = y;
+            } else {
+                transplant(y, y.right);
+                y.right = z.right;
+                y.right.p = y;
+            }
+
+            transplant(z, y);
+            y.left = z.left;
+            y.left.p = y;
+            y.color = z.color;
+        }
+
+        if (yOrigColor == BLACK) {
+            rbDeleteFixup(x);
+        }
+    }
+
+    private void rbDeleteFixup(Node x) {
+        Node w;
+        while (x != root && x.color == BLACK) {
+            if (x == x.p.left) {
+                w = x.p.right;
+                if (w.color == RED) {
+                    w.color = BLACK;
+                    x.p.color = RED;
+                    leftRotate(x.p);
+                    w = x.p.right;
+                }
+
+                if (w.left.color == BLACK && w.right.color == BLACK) {
+                    w.color = RED;
+                    x = x.p;
+                } else {
+                    if (w.right.color == BLACK) {
+                        w.left.color = BLACK;
+                        w.color = RED;
+                        rightRotate(w);
+                        w = x.p.right;
+                    }
+
+                    w.color = x.p.color;
+                    x.p.color = BLACK;
+                    w.right.color = BLACK;
+                    leftRotate(x.p);
+                    x = root;
+                }
+            } else {
+                w = x.p.left;
+                if (w.color == RED) {
+                    w.color = BLACK;
+                    x.p.color = RED;
+                    rightRotate(x.p);
+                    w = x.p.left;
+                }
+
+                if (w.right.color == BLACK && w.left.color == BLACK) {
+                    w.color = RED;
+                    x = x.p;
+                } else {
+                    if (w.left.color == BLACK) {
+                        w.right.color = BLACK;
+                        w.color = RED;
+                        leftRotate(w);
+                        w = x.p.left;
+                    }
+
+                    w.color = x.p.color;
+                    x.p.color = BLACK;
+                    w.left.color = BLACK;
+                    rightRotate(x.p);
+                    x = root;
+                }
+            }
+        }
+
+        x.color = BLACK;
+    }
+
+    private Node findMinNode(Node node) {
+        Node min = node;
+        while (min != NIL && min.left != NIL) {
+            min = min.left;
+        }
+        return min;
+    }
+
+    public String asString() {
         StringBuilder builder = new StringBuilder();
         print("Tree: ", root, 0, builder);
 
@@ -189,16 +326,19 @@ public class RBTree {
     }
 
     private void print(String prefix, Node node, int level, StringBuilder builder) {
-        if (node != null) {
-            builder.append("\n");
-            char[] indent = new char[level];
-            Arrays.fill(indent, '\t');
-            builder.append(indent).append(prefix);
+        builder.append("\n");
+        char[] indent = new char[level];
+        Arrays.fill(indent, '\t');
+        builder.append(indent).append(prefix);
+
+        if (node != NIL) {
             builder.append("v: ").append(node.value)
                     .append(", color: ").append(node.color);
 
             print("l: ", node.left, level + 1, builder);
             print("r: ", node.right, level + 1, builder);
+        } else {
+            builder.append("NIL");
         }
     }
 
@@ -213,8 +353,14 @@ public class RBTree {
         Color color;
         int value;
 
+
         public Node(int value) {
             this.value = value;
+        }
+
+        public Node(int value, Color color) {
+            this.value = value;
+            this.color = color;
         }
     }
 }
