@@ -19,6 +19,12 @@ public class FibonacciHeap {
                 node(38, List.of(
                         node(41))))
         );
+        Node node46 = node(46);
+        Node node35 = node(35);
+        Node node26 = node(26, List.of(
+                node35
+        ));
+        node26.mark = true;
         Node root = node(-1, asList(
                 node(23),
                 node(7),
@@ -27,10 +33,8 @@ public class FibonacciHeap {
                 node(17, List.of(
                         node(30))),
                 node(24, asList(
-                        node(26, List.of(
-                                node(35)
-                        )),
-                        node(46)
+                        node26,
+                        node46
                 ))
         ));
 
@@ -47,15 +51,19 @@ public class FibonacciHeap {
         System.out.println("After extractMin: ");
         print(heap);
 
-        heap.consolidate();
-        System.out.println("After consolidate: ");
+        heap.decreaseKey(node46, 15);
+        System.out.println("After decrease 46 to 15: ");
+        print(heap);
+
+        heap.decreaseKey(node35, 5);
+        System.out.println("After decrease 35 to 5: ");
         print(heap);
     }
 
     private static Node node(int key, List<Node> children) {
         Node root = new Node(key);
         int size = children.size();
-        int maxDegree = -1;
+        int maxDegree = 0;
         for (int i = 0; i < size; i++) {
             Node child = children.get(i);
             Node prev = children.get((i + size - 1) % size);
@@ -67,10 +75,10 @@ public class FibonacciHeap {
             next.left = child;
 
             child.p = root;
-            maxDegree = Math.max(child.degree, maxDegree);
+            maxDegree = Math.max(maxDegree, child.degree + 1);
         }
 
-        root.degree = maxDegree + 1;
+        root.degree = maxDegree;
         root.child = children.get(0);
         return root;
     }
@@ -80,6 +88,7 @@ public class FibonacciHeap {
     }
 
     private static void print(FibonacciHeap heap) {
+        System.out.println("-----------------------");
         print(heap.min, "");
     }
 
@@ -93,7 +102,7 @@ public class FibonacciHeap {
         Node cur = node;
 
         while (!isEnd) {
-            System.out.println(prefix + "v: " + cur.key + " | d: " + cur.degree);
+            System.out.println(prefix + "v: " + cur.key + " | d: " + cur.degree + " | m: " + cur.mark);
             print(cur.child, prefix + "      ");
 
             isEnd = cur == last;
@@ -129,16 +138,63 @@ public class FibonacciHeap {
         x.right = y;
     }
 
+    private void addNodeAfter(Node x, Node y) {
+        Node right = y.right;
+        right.left = x;
+        x.right = right;
+        y.right = x;
+        x.left = y;
+    }
+
     private void addChild(Node x, Node parent) {
         Node firstChild = parent.child;
         if (firstChild == null) {
             parent.child = x;
+            parent.degree++;
         } else {
             addNodeBefore(x, firstChild);
+            parent.child = x;
+            parent.degree = Math.max(1 + x.degree, parent.degree);
         }
     }
 
-    Node peekMin() {
+    void decreaseKey(Node x, int k) {
+        if (k > x.key) {
+            throw new IllegalArgumentException("New key[" + k + "] is more then current[" + x.key + "]");
+        }
+
+        x.key = k;
+        Node y = x.p;
+        if (y != null && x.key < y.key) {
+            cut(x, y);
+            cascadingCut(y);
+        }
+
+        if (x.key < min.key) {
+            min = x;
+        }
+    }
+
+    private void cascadingCut(Node y) {
+        Node z = y.p;
+        if (z != null) {
+            if (!y.mark) {
+                y.mark = true;
+            } else {
+                cut(y, z);
+                cascadingCut(z);
+            }
+        }
+    }
+
+    private void cut(Node x, Node y) {
+        removeFromParent(x);
+        addNodeBefore(x, min);
+        x.p = null;
+        x.mark = false;
+    }
+
+    Node minimum() {
         return min;
     }
 
@@ -156,12 +212,14 @@ public class FibonacciHeap {
                 curChild = nextChild;
             }
 
-            deleteNode(z);
+            removeFromParent(z);
 
             if (z == z.right) {
                 min = null;
             } else {
                 min = right;
+                print(this);
+                consolidate();
             }
 
             n--;
@@ -171,7 +229,7 @@ public class FibonacciHeap {
     }
 
     private void consolidate() {
-        Node[] a = new Node[100];
+        Node[] temp = new Node[100];
 
         Node last = min.left;
         Node cur = min;
@@ -180,38 +238,62 @@ public class FibonacciHeap {
             Node x = cur;
             int d = x.degree;
 
-            while (a[d] != null) {
-                Node y = a[d];
+            while (temp[d] != null) {
+                Node y = temp[d];
                 if (x.key > y.key) {
-                    int temp = x.key;
+                    int tempKey = x.key;
                     x.key = y.key;
-                    y.key = temp;
+                    y.key = tempKey;
                 }
 
                 heapLink(y, x);
-                a[d] = null;
+                temp[d] = null;
                 d++;
             }
 
-            a[d] = x;
+            temp[d] = x;
 
             isEnd = cur == last;
             cur = cur.right;
         }
+
+        min = null;
+        for (Node node : temp) {
+            if (node != null) {
+                if (min == null) {
+                    min = node;
+                    min.left = min.right = node;
+                } else {
+                    addNodeBefore(node, min);
+                    if (node.key < min.key) {
+                        min = node;
+                    }
+                }
+            }
+        }
     }
 
     private void heapLink(Node y, Node x) {
-        deleteNode(y);
+        removeFromParent(y);
         y.p = x;
         y.mark = false;
-        y.left = y.right = null;
+        y.left = y.right = y;
         addChild(y, x);
-        x.degree++;
     }
 
-    private void deleteNode(Node z) {
+    private void removeFromParent(Node z) {
         z.left.right = z.right;
         z.right.left = z.left;
+
+        if (z.p != null) {
+            if (z == z.right) {
+                z.p.child = null;
+            } else {
+                z.p.child = z.right;
+            }
+
+            z.p.degree--;
+        }
     }
 
     FibonacciHeap merge(FibonacciHeap h1, FibonacciHeap h2) {
