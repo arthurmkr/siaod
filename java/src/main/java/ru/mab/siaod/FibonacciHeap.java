@@ -111,6 +111,11 @@ public class FibonacciHeap {
     }
 
 
+    void delete(Node x) {
+        decreaseKey(x, Integer.MIN_VALUE);
+        extractMin();
+    }
+
     void insert(Node x) {
         x.degree = 0;
         x.p = null;
