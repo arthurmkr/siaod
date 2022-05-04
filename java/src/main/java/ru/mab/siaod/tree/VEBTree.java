@@ -1,30 +1,50 @@
 package ru.mab.siaod.tree;
 
+import ru.mab.siaod.RandomUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 /**
  * Дерево ван Эмде Боаса
  */
 public class VEBTree {
     public static void main(String[] args) {
-        VEBTree tree = new VEBTree(16);
-        long[] arr = {15, 2, 14, 3, 7, 4, 5};
-//        long[] arr = {1, 2, 3, 4, 5, 6};
-        for (long x : arr) {
-            tree.insert(x);
+        int U = (int) Math.pow(2, 4);
+        VEBTree vebTree = new VEBTree(U);
+
+        List<Integer> values = new ArrayList<>();
+        int N = 16;
+
+        for (int i = 0; i < N; i++) {
+            int v = RandomUtil.nextInt(U);
+            values.add(v);
+            vebTree.insert(v);
         }
 
-        for (int i = 0; i <= 16; i++) {
-            System.out.println(i + " -> " + tree.successor(i));
+        System.out.println(values);
+        for (Integer integer : values) {
+            if (!vebTree.isMember(integer)) {
+                System.out.println(integer);
+            }
         }
     }
 
     /**
-     * Размер универсума
-     */
-    long u;
-    /**
      * Нижний квадратный корень
      */
-    long lowerSqrt;
+    private final long lowerSqrt;
+    /**
+     * Верхний квадратный корень
+     */
+    private final int upperSqrt;
+    /**
+     * Размер универсума
+     */
+    private final long u;
     /**
      * Суммарная информация по дереву
      */
@@ -37,20 +57,27 @@ public class VEBTree {
      * Максимальное значение в дереве, корнем которого является текущий узел
      */
     Long max;
+
     /**
      * Дочерние узлы
      */
-    VEBTree[] cluster;
+   private final Map<Integer, VEBTree> clusterMap;
 
     public VEBTree(long u) {
-        this.lowerSqrt = (long) Math.floor(Math.sqrt(u));
-        int upperSqrt = (int) Math.ceil(Math.sqrt(u));
+        double power = Math.log(u) / Math.log(2) / 2;
+        this.lowerSqrt = (long) Math.pow(2, Math.floor(power));
+        this.upperSqrt = (int) Math.pow(2, Math.ceil(power));
 
         this.u = u;
-        cluster = new VEBTree[upperSqrt];
-        if (u > 2) {
+        clusterMap = new TreeMap<>();
+    }
+
+    private VEBTree getSummary() {
+        assert u <= 2 : "Universe must be greater than 2";
+        if (summary == null) {
             summary = new VEBTree(upperSqrt);
         }
+        return summary;
     }
 
     private int low(long x) {
@@ -86,8 +113,13 @@ public class VEBTree {
         } else if (u == 2) {
             return false;
         } else {
-            return cluster[high(x)].isMember(low(x));
+            VEBTree cluster = getCluster(high(x));
+            return cluster != null && cluster.isMember(low(x));
         }
+    }
+
+    private VEBTree getCluster(int index) {
+        return clusterMap.get(index);
     }
 
     private void insert(long x) {
@@ -104,12 +136,13 @@ public class VEBTree {
                 int high = high(x);
                 int low = low(x);
 
-                if (min(cluster[high]) == null) {
-                    summary.insert(high);
-                    cluster[high] = new VEBTree(lowerSqrt);
-                    cluster[high].emptyInsert(low);
+                VEBTree cluster = getCluster(high);
+                if (min(cluster) == null) {
+                    getSummary().insert(high);
+                    VEBTree newCluster = createCluster(high);
+                    newCluster.emptyInsert(low);
                 } else {
-                    cluster[high].insert(low);
+                    cluster.insert(low);
                 }
             }
 
@@ -117,6 +150,13 @@ public class VEBTree {
                 max = x;
             }
         }
+    }
+
+    private VEBTree createCluster(int high) {
+        VEBTree vebTree = new VEBTree(lowerSqrt);
+        clusterMap.put(high, vebTree);
+
+        return vebTree;
     }
 
     private Long successor(long x) {
@@ -134,7 +174,7 @@ public class VEBTree {
             return min;
         } else {
             int highX = high(x);
-            VEBTree highCluster = cluster[highX];
+            VEBTree highCluster = getCluster(highX);
             Long maxLow = max(highCluster);
             int lowX = low(x);
 
@@ -142,11 +182,11 @@ public class VEBTree {
                 Long offset = highCluster.successor(lowX);
                 return index(highX, offset);
             } else {
-                Long successorClusterIndex = summary.successor(highX);
+                Long successorClusterIndex = getSummary().successor(highX);
                 if (successorClusterIndex == null) {
                     return null;
                 } else {
-                    Long offset = min(cluster[Math.toIntExact(successorClusterIndex)]);
+                    Long offset = min(getCluster(Math.toIntExact(successorClusterIndex)));
                     return index(successorClusterIndex, offset);
                 }
             }
