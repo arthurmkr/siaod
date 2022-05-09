@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * Дерево ван Эмде Боаса
+ * Дерево ван Эмде Боаса.
+ * Рализация работает только с уникальными значениями
  */
 public class VEBTree {
     public static void main(String[] args) {
