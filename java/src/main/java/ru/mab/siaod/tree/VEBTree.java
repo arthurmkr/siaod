@@ -1,12 +1,11 @@
 package ru.mab.siaod.tree;
 
-import ru.mab.siaod.RandomUtil;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
-import java.util.TreeSet;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Дерево ван Эмде Боаса
@@ -16,19 +15,35 @@ public class VEBTree {
         int U = (int) Math.pow(2, 4);
         VEBTree vebTree = new VEBTree(U);
 
-        List<Integer> values = new ArrayList<>();
-        int N = 16;
+        Random random = new Random();
+        List<Integer> values =
+//                List.of(2, 3, 4, 5, 7, 14, 15);
+                List.of(5, 3, 8, 4, 2);
+//                random.longs(10, 0, 15).boxed().collect(toList());
+//        int N = 16;
 
-        for (int i = 0; i < N; i++) {
-            int v = RandomUtil.nextInt(U);
-            values.add(v);
-            vebTree.insert(v);
-        }
+//        for (int i = 0; i < N; i++) {
+//            int v = RandomUtil.nextInt(U);
+//            values.add(v);
+//            vebTree.insert(v);
+//        }
+
+        values.forEach(vebTree::insert);
 
         System.out.println(values);
-        for (Integer integer : values) {
-            if (!vebTree.isMember(integer)) {
-                System.out.println(integer);
+        for (Integer value : values) {
+            if (!vebTree.isMember(value)) {
+                System.out.println(value);
+            }
+        }
+
+        for (Integer value : values) {
+            vebTree.delete(value);
+        }
+
+        for (Integer value : values) {
+            if (vebTree.isMember(value)) {
+                System.out.println(value);
             }
         }
     }
@@ -46,6 +61,10 @@ public class VEBTree {
      */
     private final long u;
     /**
+     * Дочерние узлы
+     */
+    private final Map<Integer, VEBTree> clusterMap;
+    /**
      * Суммарная информация по дереву
      */
     VEBTree summary;
@@ -57,11 +76,6 @@ public class VEBTree {
      * Максимальное значение в дереве, корнем которого является текущий узел
      */
     Long max;
-
-    /**
-     * Дочерние узлы
-     */
-   private final Map<Integer, VEBTree> clusterMap;
 
     public VEBTree(long u) {
         double power = Math.log(u) / Math.log(2) / 2;
@@ -108,7 +122,9 @@ public class VEBTree {
     }
 
     private boolean isMember(long x) {
-        if (x == min || x == max) {
+        if (min == null) {
+            return false;
+        } else if (x == min || x == max) {
             return true;
         } else if (u == 2) {
             return false;
@@ -120,6 +136,47 @@ public class VEBTree {
 
     private VEBTree getCluster(int index) {
         return clusterMap.get(index);
+    }
+
+    private void delete(long x) {
+        if (min != null && min.equals(max)) {
+            min = max = null;
+        } else if (u == 2) {
+            if (x == 0) {
+                min = 1L;
+            } else {
+                min = 0L;
+            }
+
+            max = min;
+        } else {
+            if (min != null && x == min) {
+                Long firstCluster = min(summary);
+                x = index(firstCluster, min(getCluster(Math.toIntExact(firstCluster))));
+                min = x;
+            }
+
+            int highX = high(x);
+            VEBTree cluster = getCluster(highX);
+            cluster.delete(low(x));
+
+            VEBTree clusterWithX = getCluster(highX);
+            if (min(clusterWithX) == null) {
+                getSummary().delete(highX);
+
+                if (x == max) {
+                    Long summaryMax = max(summary);
+
+                    if (summaryMax == null) {
+                        max = min;
+                    } else {
+                        max = index(summaryMax, max(getCluster(Math.toIntExact(summaryMax))));
+                    }
+                }
+            } else if (x == max) {
+                max = index(highX, max(clusterWithX));
+            }
+        }
     }
 
     private void insert(long x) {
