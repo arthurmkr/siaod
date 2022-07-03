@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Queue;
 
 public class BFS {
-    <K extends Comparable<K>, N extends GraphNode<K>> BFSNode<K, N> bfs(UndirectedGraph<K, N> graph, K key) {
+    <K extends Comparable<K>, N extends GraphNode<K>> BFSNode<K, N> bfs(Graph<K, N> graph, K key) {
         Map<K, BFSNode<K, N>> bfsNodes = new HashMap<>();
         Queue<N> queue = new LinkedList<>();
 

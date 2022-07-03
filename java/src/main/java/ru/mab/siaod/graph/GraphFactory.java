@@ -3,8 +3,8 @@ package ru.mab.siaod.graph;
 import org.apache.commons.lang3.RandomUtils;
 
 public class GraphFactory {
-    public static UndirectedGraph<Long, SimpleGraphNode<Long>> random(int v, int e) {
-        UndirectedMapGraph<Long, SimpleGraphNode<Long>> graph = new UndirectedMapGraph<>();
+    public static Graph<Long, SimpleGraphNode<Long>> random(int v, int e) {
+        UnidirectedMapGraph<Long, SimpleGraphNode<Long>> graph = new UnidirectedMapGraph<>();
 
         for (long i = 0; i < v; i++) {
             graph.addNode(new SimpleGraphNode<>(i));

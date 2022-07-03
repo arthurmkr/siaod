@@ -1,10 +1,8 @@
 package ru.mab.siaod.graph;
 
-import ru.mab.siaod.sorts.Sort;
-
 import java.util.*;
 
-public class UndirectedMapGraph<Key extends Comparable<Key>, Node extends GraphNode<Key>> implements UndirectedGraph<Key, Node> {
+public class UnidirectedMapGraph<Key extends Comparable<Key>, Node extends GraphNode<Key>> implements Graph<Key, Node> {
     private final Map<Key, SortedSet<Node>> edges = new TreeMap<>();
     private final Map<Key, Node> nodes = new TreeMap<>();
 

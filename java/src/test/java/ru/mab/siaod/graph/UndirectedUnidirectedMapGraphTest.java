@@ -4,10 +4,10 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 
 
-class UndirectedMapGraphTest {
+class UndirectedUnidirectedMapGraphTest {
     @Test
     void test() {
-        UndirectedMapGraph<Long, SimpleGraphNode<Long>> graph = new UndirectedMapGraph<>();
+        UnidirectedMapGraph<Long, SimpleGraphNode<Long>> graph = new UnidirectedMapGraph<>();
 
         long V = 10;
         for (long i = 0; i < V; i++) {

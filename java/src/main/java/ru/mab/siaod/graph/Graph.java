@@ -1,6 +1,6 @@
 package ru.mab.siaod.graph;
 
-interface UndirectedGraph<Key extends Comparable<Key>, Node extends GraphNode<Key>> {
+interface Graph<Key extends Comparable<Key>, Node extends GraphNode<Key>> {
     void addNode(Node n);
 
     void removeNode(Node n);
