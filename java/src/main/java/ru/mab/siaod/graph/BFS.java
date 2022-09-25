@@ -25,7 +25,7 @@ public class BFS {
             for (N node : related) {
                 BFSNode<K, N> bfsNode = bfsNodes.get(node.getKey());
                 if (bfsNode == null) {
-                    bfsNodes.put(node.getKey(), new BFSNode<K, N>(curExtraData.getD() + 1, curExtraData, curNode));
+                    bfsNodes.put(node.getKey(), new BFSNode<>(curExtraData.getD() + 1, curExtraData, curNode));
 
                     queue.add(node);
                 }

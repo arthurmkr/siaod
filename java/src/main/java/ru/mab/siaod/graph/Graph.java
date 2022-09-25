@@ -1,5 +1,8 @@
 package ru.mab.siaod.graph;
 
+import java.util.Map;
+import java.util.Set;
+
 interface Graph<Key extends Comparable<Key>, Node extends GraphNode<Key>> {
     void addNode(Node n);
 
@@ -16,4 +19,6 @@ interface Graph<Key extends Comparable<Key>, Node extends GraphNode<Key>> {
     Iterable<Node> getNodes();
 
     Iterable<Node> getNodes(Node curNode);
+
+    void addEdges(Map<Key, Set<Key>> edges);
 }
