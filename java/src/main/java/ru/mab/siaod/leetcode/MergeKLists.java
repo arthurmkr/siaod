@@ -4,34 +4,6 @@ import ru.mab.siaod.ArrayUtil;
 
 import java.util.*;
 
-class ListNode {
-    int val;
-    ListNode next;
-
-    ListNode() {
-    }
-
-    ListNode(int val) {
-        this.val = val;
-    }
-
-    ListNode(int val, ListNode next) {
-        this.val = val;
-        this.next = next;
-    }
-
-    public List<Integer> toList() {
-        List<Integer> result = new ArrayList<>();
-        ListNode cur = this;
-        while (cur != null) {
-            result.add(cur.val);
-            cur = cur.next;
-        }
-
-        return result;
-    }
-}
-
 
 public class MergeKLists {
     static Random random = new Random();
