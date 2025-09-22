@@ -79,8 +79,6 @@ public class MergeKLists {
 
         return prev;
     }
-
-
 }
 
 class Solution {
