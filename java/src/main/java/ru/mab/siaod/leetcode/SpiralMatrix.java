@@ -10,44 +10,49 @@ public class SpiralMatrix {
     public static void main(String[] args) {
         SpiralMatrix alg = new SpiralMatrix();
 //        System.out.println(alg.spiralOrder(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
-        System.out.println(alg.spiralOrder(new int[][]{{1,2,3,4},{5,6,7,8},{9,10,11,12}}));
+//        System.out.println(alg.spiralOrder(new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}));
+//        System.out.println(alg.spiralOrder(new int[][]{{1}, {2}}));
+        System.out.println(alg.spiralOrder(new int[][]{{1, 2}, {3, 4}}));
     }
 
     public List<Integer> spiralOrder(int[][] matrix) {
-        List<Integer> res = new ArrayList<>(matrix.length * matrix[0].length);
+        int total = matrix.length * matrix[0].length;
+        List<Integer> res = new ArrayList<>(total);
 
         int i = 0, j = 0;
-        int di = 0, dj = 1;
         int top = -1, left = -1;
-        int right =matrix[0].length, bottom = matrix.length;
+        int right = matrix[0].length, bottom = matrix.length;
 
-        while (i < bottom && j < right) {
+        int[][] deltas = {
+                {0, 1},
+                {1, 0},
+                {0, -1},
+                {-1, 0}
+        };
+        int k = 0;
+        while (0 <= i && i < bottom && 0 <= j && j < right && total > res.size()) {
             res.add(matrix[i][j]);
 
-            i += di;
-            j += dj;
+            i += deltas[k % 4][0];
+            j += deltas[k % 4][1];
 
             if (j == right) {
-                di = 1;
-                dj = 0;
+                k++;
                 j--;
                 i++;
                 top++;
             } else if (i == bottom) {
-                di = 0;
-                dj = -1;
+                k++;
                 i--;
                 j--;
                 right--;
             } else if (j == left) {
-                di = -1;
-                dj = 0;
+                k++;
                 j++;
                 i--;
                 bottom--;
             } else if (i == top) {
-                di = 0;
-                dj = 1;
+                k++;
                 left++;
                 i++;
                 j++;
