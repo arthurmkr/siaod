@@ -20,6 +20,9 @@ class ListNode {
     }
 
     public static ListNode create(int... vals) {
+        if(vals.length == 0) {
+            return null;
+        }
         ListNode head = new ListNode(vals[0]);
         ListNode cur = head;
         for (int i = 1; i < vals.length; i++) {
