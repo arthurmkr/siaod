@@ -19,7 +19,7 @@ class ListNode {
         this.next = next;
     }
 
-    public static ListNode create(int... vals) {
+    public static ListNode of(int... vals) {
         if(vals.length == 0) {
             return null;
         }

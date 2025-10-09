@@ -5,9 +5,9 @@ package ru.mab.siaod.leetcode;
  */
 public class ReverseLinkedList {
     public static void main(String[] args) {
-        System.out.println(reverseList(ListNode.create(1, 2, 3, 4, 5)));
-        System.out.println(reverseList(ListNode.create(1, 2)));
-        System.out.println(reverseList(ListNode.create()));
+        System.out.println(reverseList(ListNode.of(1, 2, 3, 4, 5)));
+        System.out.println(reverseList(ListNode.of(1, 2)));
+        System.out.println(reverseList(ListNode.of()));
     }
 
     public static ListNode reverseList(ListNode head) {

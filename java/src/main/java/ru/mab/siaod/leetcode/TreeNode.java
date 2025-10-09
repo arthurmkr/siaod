@@ -1,8 +1,6 @@
 package ru.mab.siaod.leetcode;
 
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class TreeNode {
     int val;
     TreeNode left;
@@ -25,11 +23,16 @@ public class TreeNode {
         return build(nodes, 0);
     }
 
+    public static TreeNode node(int val, TreeNode... nodes) {
+        return new TreeNode(val, nodes.length > 0 ? nodes[0] : null, nodes.length > 1 ? nodes[1] : null);
+    }
+
+
     public static TreeNode build(Integer[] vals, int rootIndex) {
-        if(rootIndex >= vals.length) {
+        if (rootIndex >= vals.length) {
             return null;
         }
-        if(vals[rootIndex] == null) {
+        if (vals[rootIndex] == null) {
             return null;
         }
 

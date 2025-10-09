@@ -7,12 +7,12 @@ public class AddTwoNumbers {
     public static void main(String[] args) {
         AddTwoNumbers alg = new AddTwoNumbers();
         System.out.println(alg.addTwoNumbers(
-                ListNode.create(9, 9, 9, 9, 9, 9, 9),
-                ListNode.create(9, 9, 9, 9)));
+                ListNode.of(9, 9, 9, 9, 9, 9, 9),
+                ListNode.of(9, 9, 9, 9)));
 
         System.out.println(alg.addTwoNumbers(
-                ListNode.create(5),
-                ListNode.create(5)));
+                ListNode.of(5),
+                ListNode.of(5)));
     }
 
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {

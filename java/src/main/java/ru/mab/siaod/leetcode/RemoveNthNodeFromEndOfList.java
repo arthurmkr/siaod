@@ -7,10 +7,10 @@ public class RemoveNthNodeFromEndOfList {
     public static void main(String[] args) {
         RemoveNthNodeFromEndOfList alg = new RemoveNthNodeFromEndOfList();
 
-        System.out.println(alg.removeNthFromEnd(ListNode.create(1, 2, 3, 4, 5), 2));
-        System.out.println(alg.removeNthFromEnd(ListNode.create(1, 2, 3, 4, 5), 5));
-        System.out.println(alg.removeNthFromEnd(ListNode.create(1), 1));
-        System.out.println(alg.removeNthFromEnd(ListNode.create(1, 2), 1));
+        System.out.println(alg.removeNthFromEnd(ListNode.of(1, 2, 3, 4, 5), 2));
+        System.out.println(alg.removeNthFromEnd(ListNode.of(1, 2, 3, 4, 5), 5));
+        System.out.println(alg.removeNthFromEnd(ListNode.of(1), 1));
+        System.out.println(alg.removeNthFromEnd(ListNode.of(1, 2), 1));
     }
 
 //    public ListNode removeNthFromEnd(ListNode head, int n) {
